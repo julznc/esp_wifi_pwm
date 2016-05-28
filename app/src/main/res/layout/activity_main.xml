@@ -27,10 +27,10 @@
                 android:id="@+id/gp0seekArc"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="30dp"
+                android:padding="60dp"
                 seekarc:rotation="180"
-                seekarc:startAngle="40"
-                seekarc:sweepAngle="280"/>
+                seekarc:startAngle="45"
+                seekarc:sweepAngle="270"/>
 
         </LinearLayout>
 
@@ -44,10 +44,10 @@
                 android:id="@+id/gp2seekArc"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="30dp"
+                android:padding="60dp"
                 seekarc:rotation="180"
-                seekarc:startAngle="40"
-                seekarc:sweepAngle="280"/>
+                seekarc:startAngle="45"
+                seekarc:sweepAngle="270"/>
 
         </LinearLayout>
     </LinearLayout>
