@@ -18,27 +18,33 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true">
 
-        <LinearLayout
-            android:orientation="vertical"
+        <FrameLayout
             android:layout_width="0dp"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1">
 
             <com.triggertrap.seekarc.SeekArc
                 android:id="@+id/gp0seekArc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                seekarc:touchInside="true"
                 android:padding="60dp"
                 seekarc:rotation="180"
                 seekarc:startAngle="45"
                 seekarc:sweepAngle="270"/>
+            <TextView
+                android:id="@+id/gp0seekText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="40sp" />
 
-        </LinearLayout>
+        </FrameLayout>
 
-        <LinearLayout
-            android:orientation="vertical"
+        <FrameLayout
             android:layout_width="0dp"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1">
 
             <com.triggertrap.seekarc.SeekArc
@@ -49,8 +55,14 @@
                 seekarc:rotation="180"
                 seekarc:startAngle="45"
                 seekarc:sweepAngle="270"/>
+            <TextView
+                android:id="@+id/gp2seekText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="40sp" />
 
-        </LinearLayout>
+        </FrameLayout>
     </LinearLayout>
 
     <LinearLayout
