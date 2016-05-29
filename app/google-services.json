@@ -1,0 +1,37 @@
+{
+  "project_info": {
+    "project_number": "1046797881393",
+    "project_id": "wifipwm"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1046797881393:android:cf0f4f0fc29b37cd",
+        "android_client_info": {
+          "package_name": "com.ymsoftlabs.wifipwm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfVCcLEfe2f0IIOLtlDRJ1o8p_aUlcR0Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2,
+          "test_banner_ad_unit_id": "ca-app-pub-3940256099942544/6300978111",
+          "test_interstitial_ad_unit_id": "ca-app-pub-3940256099942544/1033173712"
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
