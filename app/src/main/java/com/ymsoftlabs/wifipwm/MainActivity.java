@@ -3,7 +3,9 @@ package com.ymsoftlabs.wifipwm;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -23,8 +25,9 @@ public class MainActivity extends AppCompatActivity {
     private SeekArc mGP2seekArc;
     private TextView mGP0seekText;
     private TextView mGP2seekText;
+    private ToggleButton mConnectBtn;
 
-    private static final String SERVER_IP = "192.168.0.142";
+    private static final String SERVER_IP = "192.168.0.136";
     private static final int SERVER_PORT = 3456;
 
     @Override
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         mGP2seekArc = (SeekArc) findViewById(R.id.gp2seekArc);
         mGP0seekText = (TextView) findViewById(R.id.gp0seekText);
         mGP2seekText = (TextView) findViewById(R.id.gp2seekText);
+        mConnectBtn = (ToggleButton) findViewById(R.id.connectButton);
 
         mGP0seekText.setText("0");
         mGP2seekText.setText("0");
@@ -88,6 +92,17 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        mConnectBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Log.d(TAG, "todo: connect");
+                } else {
+                    Log.d(TAG, "todo: disconnect");
+                }
+            }
+        });
     }
 
     public class UDPClient implements Runnable {
@@ -98,6 +113,10 @@ public class MainActivity extends AppCompatActivity {
 
         public void connect(String address, int port) {
             try {
+                if (null!=cliSock) {
+                    cliSock.close();
+                    cliSock = null;
+                }
                 cliSock = new DatagramSocket();
                 srvAddr = InetAddress.getByName(address);
                 srvPort = port;
@@ -113,8 +132,8 @@ public class MainActivity extends AppCompatActivity {
         public void send(String message) {
             if (!msgtosend.isEmpty() || null==srvAddr || null==cliSock) {
                 //Log.d(TAG, "previous: "  + msgtosend);
-                //if(null==srvAddr) Log.d(TAG, "null srvAddr");
-                //if(null==cliSock) Log.d(TAG, "null cliSock");
+                if(null==srvAddr) Log.d(TAG, "null srvAddr");
+                if(null==cliSock) Log.d(TAG, "null cliSock");
                 return;
             }
             //Log.d(TAG, "to send: " + message);
@@ -130,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                             byte[] datatosend = msgtosend.getBytes();
                             DatagramPacket sendPacket = new DatagramPacket(datatosend, datatosend.length, srvAddr, srvPort);
                             cliSock.send(sendPacket);
-                            //Log.d(TAG, "send to server");
+                            //Log.d(TAG, "send to " + srvAddr + ":" + srvPort);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

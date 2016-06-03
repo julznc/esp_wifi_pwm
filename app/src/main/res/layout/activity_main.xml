@@ -69,19 +69,24 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:orientation="horizontal"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="50dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true">
+        <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/connectButton"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp" />
         <com.google.android.gms.ads.AdView
             android:id="@+id/adView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
             ads:adSize="BANNER"
-            ads:adUnitId="@string/banner_ad_unit_id">
+            ads:adUnitId="@string/banner_ad_unit_id" >
         </com.google.android.gms.ads.AdView>
+
     </LinearLayout>
 </RelativeLayout>
