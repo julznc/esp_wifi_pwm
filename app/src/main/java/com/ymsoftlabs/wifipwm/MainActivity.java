@@ -43,11 +43,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String SERVER_IP = "192.168.0.136";
     private static final int SERVER_PORT = 3456;
 
-    private static final Pattern ADDRESS_PATTERN =
-            Pattern.compile("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}" +
-                            "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)" +
-                            "((?:[:][0-9]{2,5})?)$");
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,28 +82,15 @@ public class MainActivity extends AppCompatActivity {
         mSetupDialog = dialogBuilder.create();
 
         mAddressText = (EditText)dialogView.findViewById(R.id.editServerAdrress);
+        mAddressText.addTextChangedListener(new AddressValidator());
         mAddressText.setText("192.168.0.136:3456");
-        mAddressText.addTextChangedListener(new TextWatcher() {
-            private String previousTxt = "";
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                previousTxt = s.toString();
-            }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) { }
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (ADDRESS_PATTERN.matcher(s).matches()) {
-                    previousTxt = s.toString();
-                }  else {
-                    s.replace(0, s.length(), previousTxt);
-                }
-            }
-        });
 
         mGP0setupText = (EditText)dialogView.findViewById(R.id.editGP0);
+        mGP0setupText.addTextChangedListener(new PWMSetupValidator());
         mGP0setupText.setText("50, 255");
+
         mGP2setupText = (EditText)dialogView.findViewById(R.id.editGP2);
+        mGP2setupText.addTextChangedListener(new PWMSetupValidator());
         mGP2setupText.setText("50, 255");
 
         mGP0seekText.setText("0");
@@ -219,5 +201,46 @@ public class MainActivity extends AppCompatActivity {
                 }
             } // while (true)
         } // run()
+    }
+
+    public class AddressValidator implements TextWatcher {
+        private final Pattern ADDRESS_PATTERN =
+                Pattern.compile("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}" +
+                        "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)" +
+                        "((?:[:][0-9]{2,5})?)$");
+        private String previousTxt = "";
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            previousTxt = s.toString();
+        }
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) { }
+        @Override
+        public void afterTextChanged(Editable s) {
+            if (ADDRESS_PATTERN.matcher(s).matches()) {
+                previousTxt = s.toString();
+            }  else {
+                s.replace(0, s.length(), previousTxt);
+            }
+        }
+    }
+
+    public class PWMSetupValidator implements TextWatcher {
+        private final Pattern PWMSETUP_PATTERN = Pattern.compile("^[1-9][0-9]{0,3}[,][ ][1-9][0-9]{0,3}$");
+        private String previousTxt = "";
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            previousTxt = s.toString();
+        }
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) { }
+        @Override
+        public void afterTextChanged(Editable s) {
+            if (PWMSETUP_PATTERN.matcher(s).matches()) {
+                previousTxt = s.toString();
+            }  else {
+                s.replace(0, s.length(), previousTxt);
+            }
+        }
     }
 }
