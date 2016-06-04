@@ -96,45 +96,8 @@ public class MainActivity extends AppCompatActivity {
         mGP0seekText.setText("0");
         mGP2seekText.setText("0");
 
-        mGP0seekArc.setOnSeekArcChangeListener(new SeekArc.OnSeekArcChangeListener() {
-            @Override
-            public void onProgressChanged(SeekArc seekArc, int progress, boolean fromUser) {
-                String strVal = String.valueOf(progress);
-                mGP0seekText.setText(strVal);
-                //Log.d(TAG, strVal);
-                mUdpClient.send("GP0=" + strVal);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekArc seekArc) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekArc seekArc) {
-
-            }
-        });
-
-        mGP2seekArc.setOnSeekArcChangeListener(new SeekArc.OnSeekArcChangeListener() {
-            @Override
-            public void onProgressChanged(SeekArc seekArc, int progress, boolean fromUser) {
-                String strVal = String.valueOf(progress);
-                mGP2seekText.setText(strVal);
-                //Log.d(TAG, strVal);
-                mUdpClient.send("GP2=" + strVal);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekArc seekArc) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekArc seekArc) {
-
-            }
-        });
+        mGP0seekArc.setOnSeekArcChangeListener(new SeekListener());
+        mGP2seekArc.setOnSeekArcChangeListener(new SeekListener());
 
         mConnectBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -201,6 +164,34 @@ public class MainActivity extends AppCompatActivity {
                 }
             } // while (true)
         } // run()
+    }
+
+    public class SeekListener implements SeekArc.OnSeekArcChangeListener {
+        @Override
+        public void onProgressChanged(SeekArc seekArc, int progress, boolean fromUser) {
+            int id = seekArc.getId();
+            String strVal = String.valueOf(progress);
+            if (id == R.id.gp0seekArc) {
+                mGP0seekText.setText(strVal);
+                Log.d(TAG, strVal);
+                mUdpClient.send("GP0=" + strVal);
+            } else if (id == R.id.gp2seekArc) {
+                mGP2seekText.setText(strVal);
+                Log.d(TAG, strVal);
+                mUdpClient.send("GP2=" + strVal);
+            }
+
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekArc seekArc) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekArc seekArc) {
+
+        }
     }
 
     public class AddressValidator implements TextWatcher {
