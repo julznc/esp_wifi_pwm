@@ -4,6 +4,8 @@ import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,11 +22,12 @@ import com.triggertrap.seekarc.SeekArc;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "WifiPWM";
-    
+
     private UDPClient mUdpClient;
     private SeekArc mGP0seekArc;
     private SeekArc mGP2seekArc;
@@ -37,6 +40,11 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String SERVER_IP = "192.168.0.136";
     private static final int SERVER_PORT = 3456;
+
+    private static final Pattern ADDRESS_PATTERN =
+            Pattern.compile("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}" +
+                            "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)" +
+                            "((?:[:][0-9]{2,5})?)$");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,12 +70,11 @@ public class MainActivity extends AppCompatActivity {
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.setup_dialog, null);
         dialogBuilder.setView(dialogView);
-        mAddressText = (EditText)dialogView.findViewById(R.id.editServerAdrress);
         dialogBuilder.setTitle("ESP Setup");
-        dialogBuilder.setMessage("Edit parameters");
+        //dialogBuilder.setMessage("Edit parameters");
         dialogBuilder.setPositiveButton("Connect", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int btn) {
-                Log.d(TAG, "connect");
+                Log.d(TAG, "connect to " + mAddressText.getText());
             }
         });
         dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -76,6 +83,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mSetupDialog = dialogBuilder.create();
+
+        mAddressText = (EditText)dialogView.findViewById(R.id.editServerAdrress);
+        mAddressText.setText("192.168.0.136:3456");
+        mAddressText.addTextChangedListener(new TextWatcher() {
+            private String previousTxt = "";
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                previousTxt = s.toString();
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (ADDRESS_PATTERN.matcher(s).matches()) {
+                    previousTxt = s.toString();
+                }  else {
+                    s.replace(0, s.length(), previousTxt);
+                }
+            }
+        });
 
         mGP0seekText.setText("0");
         mGP2seekText.setText("0");
