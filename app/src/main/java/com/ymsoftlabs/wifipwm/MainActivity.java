@@ -1,9 +1,14 @@
 package com.ymsoftlabs.wifipwm;
 
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -27,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView mGP2seekText;
     private ToggleButton mConnectBtn;
 
+    private AlertDialog mSetupDialog;
+    private EditText mAddressText;
+
     private static final String SERVER_IP = "192.168.0.136";
     private static final int SERVER_PORT = 3456;
 
@@ -49,6 +57,25 @@ public class MainActivity extends AppCompatActivity {
         mGP0seekText = (TextView) findViewById(R.id.gp0seekText);
         mGP2seekText = (TextView) findViewById(R.id.gp2seekText);
         mConnectBtn = (ToggleButton) findViewById(R.id.connectButton);
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.setup_dialog, null);
+        dialogBuilder.setView(dialogView);
+        mAddressText = (EditText)dialogView.findViewById(R.id.editServerAdrress);
+        dialogBuilder.setTitle("ESP Setup");
+        dialogBuilder.setMessage("Edit parameters");
+        dialogBuilder.setPositiveButton("Connect", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int btn) {
+                Log.d(TAG, "connect");
+            }
+        });
+        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int btn) {
+                Log.d(TAG, "cancel");
+            }
+        });
+        mSetupDialog = dialogBuilder.create();
 
         mGP0seekText.setText("0");
         mGP2seekText.setText("0");
@@ -97,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    Log.d(TAG, "todo: connect");
+                    mSetupDialog.show();
                 } else {
                     Log.d(TAG, "todo: disconnect");
                 }
