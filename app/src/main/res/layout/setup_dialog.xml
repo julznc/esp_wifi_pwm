@@ -5,10 +5,61 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/editServerAdrress"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="text" />
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal">
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Address[:port] " />
+        <EditText
+            android:id="@+id/editServerAdrress"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:inputType="text" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal">
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="GPIO 0 PWM "/>
+        <EditText
+            android:id="@+id/editGP0"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:inputType="text" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal">
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="GPIO 2 PWM "/>
+        <EditText
+            android:id="@+id/editGP2"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:inputType="text" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
 
     private AlertDialog mSetupDialog;
     private EditText mAddressText;
+    private EditText mGP0setupText;
+    private EditText mGP2setupText;
 
     private static final String SERVER_IP = "192.168.0.136";
     private static final int SERVER_PORT = 3456;
@@ -103,6 +105,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        mGP0setupText = (EditText)dialogView.findViewById(R.id.editGP0);
+        mGP0setupText.setText("50, 255");
+        mGP2setupText = (EditText)dialogView.findViewById(R.id.editGP2);
+        mGP2setupText.setText("50, 255");
 
         mGP0seekText.setText("0");
         mGP2seekText.setText("0");
