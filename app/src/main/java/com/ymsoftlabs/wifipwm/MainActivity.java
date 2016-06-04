@@ -40,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText mGP0setupText;
     private EditText mGP2setupText;
 
-    private static final String SERVER_IP = "192.168.0.136";
-    private static final int SERVER_PORT = 3456;
+    private static final String DEFAULT_SERVER_ADDRESS = "192.168.0.136:3456";
+    private static final String DEFAULT_PWM_SETUP = "50, 127";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
 
         mUdpClient = new UDPClient();
         new Thread(mUdpClient).start();
-        mUdpClient.connect(SERVER_IP, SERVER_PORT);
 
         mGP0seekArc = (SeekArc) findViewById(R.id.gp0seekArc);
         mGP2seekArc = (SeekArc) findViewById(R.id.gp2seekArc);
@@ -71,7 +70,21 @@ public class MainActivity extends AppCompatActivity {
         //dialogBuilder.setMessage("Edit parameters");
         dialogBuilder.setPositiveButton("Connect", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int btn) {
-                Log.d(TAG, "connect to " + mAddressText.getText());
+                String address_port[] = mAddressText.getText().toString().split(":");
+                String address = address_port[0];
+                int port = Integer.parseInt(address_port[1]);
+                mUdpClient.connect(address, port);
+                //Log.d(TAG, "connect to " + mAddressText.getText());
+
+                String pwm0_setup[] = mGP0setupText.getText().toString().split(", ");
+                String pwm0cfg ="f0=" + pwm0_setup[0] + ",r0=" + pwm0_setup[1];
+                //Log.d(TAG, pwm0cfg);
+                mUdpClient.sendconfig(pwm0cfg);
+
+                String pwm2_setup[] = mGP2setupText.getText().toString().split(", ");
+                String pwm2cfg ="f0=" + pwm2_setup[0] + ",r0=" + pwm2_setup[1];
+                //Log.d(TAG, pwm2cfg);
+                mUdpClient.sendconfig(pwm2cfg);
             }
         });
         dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -83,15 +96,15 @@ public class MainActivity extends AppCompatActivity {
 
         mAddressText = (EditText)dialogView.findViewById(R.id.editServerAdrress);
         mAddressText.addTextChangedListener(new AddressValidator());
-        mAddressText.setText("192.168.0.136:3456");
+        mAddressText.setText(DEFAULT_SERVER_ADDRESS);
 
         mGP0setupText = (EditText)dialogView.findViewById(R.id.editGP0);
         mGP0setupText.addTextChangedListener(new PWMSetupValidator());
-        mGP0setupText.setText("50, 255");
+        mGP0setupText.setText(DEFAULT_PWM_SETUP);
 
         mGP2setupText = (EditText)dialogView.findViewById(R.id.editGP2);
         mGP2setupText.addTextChangedListener(new PWMSetupValidator());
-        mGP2setupText.setText("50, 255");
+        mGP2setupText.setText(DEFAULT_PWM_SETUP);
 
         mGP0seekText.setText("0");
         mGP2seekText.setText("0");
@@ -105,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 if (isChecked) {
                     mSetupDialog.show();
                 } else {
-                    Log.d(TAG, "todo: disconnect");
+                    mUdpClient.disconnect();
                 }
             }
         });
@@ -116,34 +129,53 @@ public class MainActivity extends AppCompatActivity {
         private InetAddress srvAddr = null;
         private int srvPort = -1;
         private String msgtosend = "";
+        private int msgid = 1;
+        private String [] cfg_buf = new String[16];
+        private int cfg_in = 0;
+        private int cfg_out = 0;
 
         public void connect(String address, int port) {
             try {
-                if (null!=cliSock) {
-                    cliSock.close();
-                    cliSock = null;
-                }
+                disconnect();
                 cliSock = new DatagramSocket();
                 srvAddr = InetAddress.getByName(address);
                 srvPort = port;
+                Log.d(TAG, "socket opened: address=" + address + " port=" + port);
             } catch (Exception e) {
                 Log.e(TAG, "unable to create socket");
             }
         }
 
         public void disconnect() {
-            cliSock.close();
+            if (null!=cliSock) {
+                cliSock.close();
+                cliSock = null;
+                srvAddr = null;
+                srvPort = -1;
+                Log.d(TAG, "socket closed");
+            }
+            msgid = 1;
         }
 
-        public void send(String message) {
+        public boolean send(String message) {
             if (!msgtosend.isEmpty() || null==srvAddr || null==cliSock) {
                 //Log.d(TAG, "previous: "  + msgtosend);
-                if(null==srvAddr) Log.d(TAG, "null srvAddr");
-                if(null==cliSock) Log.d(TAG, "null cliSock");
-                return;
+                //if(null==srvAddr) Log.d(TAG, "null srvAddr");
+                //if(null==cliSock) Log.d(TAG, "null cliSock");
+                return false;
             }
             //Log.d(TAG, "to send: " + message);
             msgtosend = message;
+            return true;
+        }
+
+        public void sendconfig(String config) {
+            // store first, send only if ready
+            cfg_buf[cfg_in] = config;
+            cfg_in += 1;
+            if (cfg_in >= cfg_buf.length) {
+                cfg_in = 0;
+            }
         }
 
         @Override
@@ -152,14 +184,27 @@ public class MainActivity extends AppCompatActivity {
                 if (null!=srvAddr && null!=cliSock) {
                     if (!msgtosend.isEmpty()) {
                         try {
-                            byte[] datatosend = msgtosend.getBytes();
+                            String strtosend = "id=" + msgid + "," + msgtosend;
+                            byte[] datatosend = strtosend.getBytes();
                             DatagramPacket sendPacket = new DatagramPacket(datatosend, datatosend.length, srvAddr, srvPort);
                             cliSock.send(sendPacket);
                             //Log.d(TAG, "send to " + srvAddr + ":" + srvPort);
+                            msgid += 1;
+                            if (msgid > 9999) {
+                                msgid = 1;
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                         msgtosend = "";
+                    }
+                    if (cfg_out != cfg_in) {
+                        if (send(cfg_buf[cfg_out])) {
+                            cfg_out += 1;
+                            if (cfg_out >= cfg_buf.length) {
+                                cfg_out = 0;
+                            }
+                        }
                     }
                 }
             } // while (true)
@@ -171,27 +216,20 @@ public class MainActivity extends AppCompatActivity {
         public void onProgressChanged(SeekArc seekArc, int progress, boolean fromUser) {
             int id = seekArc.getId();
             String strVal = String.valueOf(progress);
+            //Log.d(TAG, strVal);
             if (id == R.id.gp0seekArc) {
                 mGP0seekText.setText(strVal);
-                Log.d(TAG, strVal);
-                mUdpClient.send("GP0=" + strVal);
+                mUdpClient.send("d0=" + strVal);
             } else if (id == R.id.gp2seekArc) {
                 mGP2seekText.setText(strVal);
-                Log.d(TAG, strVal);
-                mUdpClient.send("GP2=" + strVal);
+                mUdpClient.send("d2=" + strVal);
             }
-
         }
 
         @Override
-        public void onStartTrackingTouch(SeekArc seekArc) {
-
-        }
-
+        public void onStartTrackingTouch(SeekArc seekArc) { }
         @Override
-        public void onStopTrackingTouch(SeekArc seekArc) {
-
-        }
+        public void onStopTrackingTouch(SeekArc seekArc) { }
     }
 
     public class AddressValidator implements TextWatcher {
