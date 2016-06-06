@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         mGP2seekText = (TextView) findViewById(R.id.gp2seekText);
         mConnectBtn = (ToggleButton) findViewById(R.id.connectButton);
 
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this).setCancelable(false);
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.setup_dialog, null);
         dialogBuilder.setView(dialogView);
@@ -85,11 +85,15 @@ public class MainActivity extends AppCompatActivity {
                 String pwm2cfg ="f0=" + pwm2_setup[0] + ",r0=" + pwm2_setup[1];
                 //Log.d(TAG, pwm2cfg);
                 mUdpClient.sendconfig(pwm2cfg);
+
+                mGP0seekArc.setEnabled(true);
+                mGP2seekArc.setEnabled(true);
             }
         });
         dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int btn) {
                 Log.d(TAG, "cancel");
+                mConnectBtn.setChecked(false);
             }
         });
         mSetupDialog = dialogBuilder.create();
@@ -110,7 +114,9 @@ public class MainActivity extends AppCompatActivity {
         mGP2seekText.setText("0");
 
         mGP0seekArc.setOnSeekArcChangeListener(new SeekListener());
+        mGP0seekArc.setEnabled(false);
         mGP2seekArc.setOnSeekArcChangeListener(new SeekListener());
+        mGP2seekArc.setEnabled(false);
 
         mConnectBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -118,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
                 if (isChecked) {
                     mSetupDialog.show();
                 } else {
+                    mGP0seekArc.setEnabled(false);
+                    mGP2seekArc.setEnabled(false);
                     mUdpClient.disconnect();
                 }
             }

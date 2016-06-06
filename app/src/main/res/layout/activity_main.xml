@@ -79,7 +79,9 @@
             android:layout_weight="1"
             android:id="@+id/connectButton"
             android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp" />
+            android:layout_marginRight="20dp"
+            android:textOff="Connect to ESP"
+            android:textOn="Disconnect" />
         <com.google.android.gms.ads.AdView
             android:id="@+id/adView"
             android:layout_width="wrap_content"
