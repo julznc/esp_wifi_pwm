@@ -1,6 +1,8 @@
 package com.ymsoftlabs.wifipwm;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -40,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
     private EditText mGP0setupText;
     private EditText mGP2setupText;
 
+    private static final String APP_PACKAGE = "com.ymsoftlabs.wifipwm";
+    private static final String SERVER_ADDRESS_PREF = APP_PACKAGE + ".server_address";
+    private static final String PWM0_CFG_PREF = APP_PACKAGE + ".pwm0_cfg";
+    private static final String PWM2_CFG_PREF = APP_PACKAGE + ".pwm2_cfg";
     private static final String DEFAULT_SERVER_ADDRESS = "192.168.0.136:3456";
     private static final String DEFAULT_PWM_SETUP = "50, 127";
 
@@ -61,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         mGP0seekText = (TextView) findViewById(R.id.gp0seekText);
         mGP2seekText = (TextView) findViewById(R.id.gp2seekText);
         mConnectBtn = (ToggleButton) findViewById(R.id.connectButton);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this).setCancelable(false);
         LayoutInflater inflater = this.getLayoutInflater();
@@ -70,21 +77,29 @@ public class MainActivity extends AppCompatActivity {
         //dialogBuilder.setMessage("Edit parameters");
         dialogBuilder.setPositiveButton("Connect", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int btn) {
-                String address_port[] = mAddressText.getText().toString().split(":");
+                String address_cfg_str = mAddressText.getText().toString();
+                String pwm0_cfg_str = mGP0setupText.getText().toString();
+                String pwm2_cfg_str = mGP2setupText.getText().toString();
+
+                String address_port[] = address_cfg_str.split(":");
                 String address = address_port[0];
                 int port = Integer.parseInt(address_port[1]);
                 mUdpClient.connect(address, port);
                 //Log.d(TAG, "connect to " + mAddressText.getText());
 
-                String pwm0_setup[] = mGP0setupText.getText().toString().split(", ");
+                String pwm0_setup[] = pwm0_cfg_str.split(", ");
                 String pwm0cfg ="f0=" + pwm0_setup[0] + ",r0=" + pwm0_setup[1];
                 //Log.d(TAG, pwm0cfg);
                 mUdpClient.sendconfig(pwm0cfg);
 
-                String pwm2_setup[] = mGP2setupText.getText().toString().split(", ");
+                String pwm2_setup[] = pwm2_cfg_str.split(", ");
                 String pwm2cfg ="f0=" + pwm2_setup[0] + ",r0=" + pwm2_setup[1];
                 //Log.d(TAG, pwm2cfg);
                 mUdpClient.sendconfig(pwm2cfg);
+
+                prefs.edit().putString(SERVER_ADDRESS_PREF, address_cfg_str).apply();
+                prefs.edit().putString(PWM0_CFG_PREF, pwm0_cfg_str).apply();
+                prefs.edit().putString(PWM2_CFG_PREF, pwm2_cfg_str).apply();
 
                 mGP0seekArc.setEnabled(true);
                 mGP2seekArc.setEnabled(true);
@@ -100,15 +115,13 @@ public class MainActivity extends AppCompatActivity {
 
         mAddressText = (EditText)dialogView.findViewById(R.id.editServerAdrress);
         mAddressText.addTextChangedListener(new AddressValidator());
-        mAddressText.setText(DEFAULT_SERVER_ADDRESS);
 
         mGP0setupText = (EditText)dialogView.findViewById(R.id.editGP0);
         mGP0setupText.addTextChangedListener(new PWMSetupValidator());
-        mGP0setupText.setText(DEFAULT_PWM_SETUP);
 
         mGP2setupText = (EditText)dialogView.findViewById(R.id.editGP2);
         mGP2setupText.addTextChangedListener(new PWMSetupValidator());
-        mGP2setupText.setText(DEFAULT_PWM_SETUP);
+
 
         mGP0seekText.setText("0");
         mGP2seekText.setText("0");
@@ -122,6 +135,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    String address = prefs.getString(SERVER_ADDRESS_PREF, DEFAULT_SERVER_ADDRESS);
+                    String pwm0 = prefs.getString(PWM0_CFG_PREF, DEFAULT_PWM_SETUP);
+                    String pwm2 = prefs.getString(PWM2_CFG_PREF, DEFAULT_PWM_SETUP);
+                    mAddressText.setText(address);
+                    mGP0setupText.setText(pwm0);
+                    mGP2setupText.setText(pwm2);
                     mSetupDialog.show();
                 } else {
                     mGP0seekArc.setEnabled(false);
