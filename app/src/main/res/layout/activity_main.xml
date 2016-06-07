@@ -11,6 +11,13 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.ymsoftlabs.wifipwm.MainActivity">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/tvStatus"
+        android:layout_gravity="left|top" />
+
     <LinearLayout
         android:layout_above="@+id/linearLayout"
         android:orientation="horizontal"

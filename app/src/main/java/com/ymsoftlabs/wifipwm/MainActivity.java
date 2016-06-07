@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private UDPClient mUdpClient;
     private SeekArc mGP0seekArc;
     private SeekArc mGP2seekArc;
+    private TextView mStatusText;
     private TextView mGP0seekText;
     private TextView mGP2seekText;
     private ToggleButton mConnectBtn;
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
         mGP0seekArc = (SeekArc) findViewById(R.id.gp0seekArc);
         mGP2seekArc = (SeekArc) findViewById(R.id.gp2seekArc);
+        mStatusText = (TextView) findViewById(R.id.tvStatus);
         mGP0seekText = (TextView) findViewById(R.id.gp0seekText);
         mGP2seekText = (TextView) findViewById(R.id.gp2seekText);
         mConnectBtn = (ToggleButton) findViewById(R.id.connectButton);
@@ -101,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 prefs.edit().putString(PWM0_CFG_PREF, pwm0_cfg_str).apply();
                 prefs.edit().putString(PWM2_CFG_PREF, pwm2_cfg_str).apply();
 
+                mStatusText.setText(address_cfg_str);
                 mGP0seekArc.setEnabled(true);
                 mGP2seekArc.setEnabled(true);
             }
@@ -125,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
         mGP0seekText.setText("0");
         mGP2seekText.setText("0");
+        mStatusText.setText("not connected");
 
         mGP0seekArc.setOnSeekArcChangeListener(new SeekListener());
         mGP0seekArc.setEnabled(false);
