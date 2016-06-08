@@ -1,20 +1,27 @@
 {
   "project_info": {
-    "project_number": "1046797881393",
-    "project_id": "wifipwm"
+    "project_number": "329728751778",
+    "firebase_url": "https://admob-app-id-4843224549.firebaseio.com",
+    "project_id": "admob-app-id-4843224549",
+    "storage_bucket": "admob-app-id-4843224549.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1046797881393:android:cf0f4f0fc29b37cd",
+        "mobilesdk_app_id": "1:329728751778:android:cf0f4f0fc29b37cd",
         "android_client_info": {
           "package_name": "com.ymsoftlabs.wifipwm"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "329728751778-f9g0rkd8d221bvvut1i1b99n0thq2v7c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDfVCcLEfe2f0IIOLtlDRJ1o8p_aUlcR0Y"
+          "current_key": "AIzaSyCQMRA3aX31mgsfnDj13A85dZcWO7p8wEY"
         }
       ],
       "services": {
@@ -26,9 +33,7 @@
           "other_platform_oauth_client": []
         },
         "ads_service": {
-          "status": 2,
-          "test_banner_ad_unit_id": "ca-app-pub-3940256099942544/6300978111",
-          "test_interstitial_ad_unit_id": "ca-app-pub-3940256099942544/1033173712"
+          "status": 2
         }
       }
     }
