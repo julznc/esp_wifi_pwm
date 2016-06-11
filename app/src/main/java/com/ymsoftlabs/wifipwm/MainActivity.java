@@ -90,14 +90,19 @@ public class MainActivity extends AppCompatActivity {
                 //Log.d(TAG, "connect to " + mAddressText.getText());
 
                 String pwm0_setup[] = pwm0_cfg_str.split(", ");
-                String pwm0cfg ="f0=" + pwm0_setup[0] + ",r0=" + pwm0_setup[1];
+                String pwm0cfg ="f0=" + pwm0_setup[0] + ",c0=" + pwm0_setup[1];
                 //Log.d(TAG, pwm0cfg);
                 mUdpClient.sendconfig(pwm0cfg);
+                String duty0 = "d0=" + mGP0seekText.getText();
+                mUdpClient.sendconfig(duty0);
 
                 String pwm2_setup[] = pwm2_cfg_str.split(", ");
-                String pwm2cfg ="f2=" + pwm2_setup[0] + ",r2=" + pwm2_setup[1];
+                String pwm2cfg ="f2=" + pwm2_setup[0] + ",c2=" + pwm2_setup[1];
                 //Log.d(TAG, pwm2cfg);
                 mUdpClient.sendconfig(pwm2cfg);
+                mUdpClient.sendconfig(pwm0cfg);
+                String duty2 = "d2=" + mGP2seekText.getText();
+                mUdpClient.sendconfig(duty2);
 
                 prefs.edit().putString(SERVER_ADDRESS_PREF, address_cfg_str).apply();
                 prefs.edit().putString(PWM0_CFG_PREF, pwm0_cfg_str).apply();
