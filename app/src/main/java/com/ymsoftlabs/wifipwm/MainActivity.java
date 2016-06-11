@@ -94,22 +94,32 @@ public class MainActivity extends AppCompatActivity {
                 //Log.d(TAG, "connect to " + mAddressText.getText());
 
                 String pwm0_setup[] = pwm0_cfg_str.split(", ");
-                String pwm0cfg ="f0=" + pwm0_setup[0] + ",c0=" + pwm0_setup[1];
+                int freq0 = Integer.parseInt(pwm0_setup[0]);
+                int cycles0 = Integer.parseInt(pwm0_setup[1]);
+                if (freq0 < 0 || freq0 > 1000) freq0 = 1000;
+                if (cycles0 < 0 || cycles0 > 1023) freq0 = 1023;
+                String pwm0cfg ="f0=" + freq0 + ",c0=" + cycles0;
                 //Log.d(TAG, pwm0cfg);
                 mUdpClient.sendconfig(pwm0cfg);
                 String duty0 = "d0=" + mGP0seekArc.getProgress();
                 mUdpClient.sendconfig(duty0);
-                mGP0seekArc.setMax(Integer.parseInt(pwm0_setup[1]));
-                mGP0freqText.setText(pwm0_setup[0] + " Hz");
+                mGP0seekArc.setMax(cycles0);
+                String freq0str = String.valueOf(freq0) + " Hz";
+                mGP0freqText.setText(freq0str);
 
                 String pwm2_setup[] = pwm2_cfg_str.split(", ");
-                String pwm2cfg ="f2=" + pwm2_setup[0] + ",c2=" + pwm2_setup[1];
+                int freq2 = Integer.parseInt(pwm2_setup[0]);
+                int cycles2 = Integer.parseInt(pwm2_setup[1]);
+                if (freq2 < 0 || freq2 > 1000) freq2 = 1000;
+                if (cycles2 < 0 || cycles2 > 1023) freq2 = 1023;
+                String pwm2cfg ="f2=" + freq2 + ",c2=" + cycles2;
                 //Log.d(TAG, pwm2cfg);
                 mUdpClient.sendconfig(pwm2cfg);
                 String duty2 = "d2=" + mGP2seekArc.getProgress();
                 mUdpClient.sendconfig(duty2);
-                mGP2seekArc.setMax(Integer.parseInt(pwm2_setup[1]));
-                mGP2freqText.setText(pwm2_setup[0] + " Hz");
+                mGP2seekArc.setMax(cycles2);
+                String freq2str = String.valueOf(freq2) + " Hz";
+                mGP2freqText.setText(freq2str);
 
                 prefs.edit().putString(SERVER_ADDRESS_PREF, address_cfg_str).apply();
                 prefs.edit().putString(PWM0_CFG_PREF, pwm0_cfg_str).apply();
@@ -271,13 +281,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onProgressChanged(SeekArc seekArc, int progress, boolean fromUser) {
             int id = seekArc.getId();
-            String strVal = String.valueOf((100 * progress) / 1023);
+            String strVal = String.valueOf((100 * progress) / 1023) + "%";
             //Log.d(TAG, strVal);
             if (id == R.id.gp0seekArc) {
-                mGP0seekText.setText(strVal + "%");
+                mGP0seekText.setText(strVal);
                 mUdpClient.send("d0=" + progress);
             } else if (id == R.id.gp2seekArc) {
-                mGP2seekText.setText(strVal + "%");
+                mGP2seekText.setText(strVal);
                 mUdpClient.send("d2=" + progress);
             }
         }
