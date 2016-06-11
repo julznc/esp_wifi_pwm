@@ -155,6 +155,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mUdpClient.disconnect();
+        mUdpClient.exit();
+    }
+
     public class UDPClient implements Runnable {
         private DatagramSocket cliSock = null;
         private InetAddress srvAddr = null;
@@ -164,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
         private String [] cfg_buf = new String[16];
         private int cfg_in = 0;
         private int cfg_out = 0;
+        private volatile boolean running = true;
 
         public void connect(String address, int port) {
             try {
@@ -209,9 +217,13 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        public void exit() {
+            running = false;
+        }
+
         @Override
         public void run() {
-            while (true) {
+            while (running) {
                 if (null!=srvAddr && null!=cliSock) {
                     if (!msgtosend.isEmpty()) {
                         try {
