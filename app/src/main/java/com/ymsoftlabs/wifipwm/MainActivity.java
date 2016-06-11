@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView mStatusText;
     private TextView mGP0seekText;
     private TextView mGP2seekText;
+    private TextView mGP0freqText;
+    private TextView mGP2freqText;
     private ToggleButton mConnectBtn;
 
     private AlertDialog mSetupDialog;
@@ -68,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
         mStatusText = (TextView) findViewById(R.id.tvStatus);
         mGP0seekText = (TextView) findViewById(R.id.gp0seekText);
         mGP2seekText = (TextView) findViewById(R.id.gp2seekText);
+        mGP0freqText = (TextView) findViewById(R.id.gp0freqText);
+        mGP2freqText = (TextView) findViewById(R.id.gp2freqText);
         mConnectBtn = (ToggleButton) findViewById(R.id.connectButton);
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -93,16 +97,19 @@ public class MainActivity extends AppCompatActivity {
                 String pwm0cfg ="f0=" + pwm0_setup[0] + ",c0=" + pwm0_setup[1];
                 //Log.d(TAG, pwm0cfg);
                 mUdpClient.sendconfig(pwm0cfg);
-                String duty0 = "d0=" + mGP0seekText.getText();
+                String duty0 = "d0=" + mGP0seekArc.getProgress();
                 mUdpClient.sendconfig(duty0);
+                mGP0seekArc.setMax(Integer.parseInt(pwm0_setup[1]));
+                mGP0freqText.setText(pwm0_setup[0] + " Hz");
 
                 String pwm2_setup[] = pwm2_cfg_str.split(", ");
                 String pwm2cfg ="f2=" + pwm2_setup[0] + ",c2=" + pwm2_setup[1];
                 //Log.d(TAG, pwm2cfg);
                 mUdpClient.sendconfig(pwm2cfg);
-                mUdpClient.sendconfig(pwm0cfg);
-                String duty2 = "d2=" + mGP2seekText.getText();
+                String duty2 = "d2=" + mGP2seekArc.getProgress();
                 mUdpClient.sendconfig(duty2);
+                mGP2seekArc.setMax(Integer.parseInt(pwm2_setup[1]));
+                mGP2freqText.setText(pwm2_setup[0] + " Hz");
 
                 prefs.edit().putString(SERVER_ADDRESS_PREF, address_cfg_str).apply();
                 prefs.edit().putString(PWM0_CFG_PREF, pwm0_cfg_str).apply();
@@ -131,8 +138,8 @@ public class MainActivity extends AppCompatActivity {
         mGP2setupText.addTextChangedListener(new PWMSetupValidator());
 
 
-        mGP0seekText.setText("0");
-        mGP2seekText.setText("0");
+        mGP0seekText.setText("0%");
+        mGP2seekText.setText("0%");
         mStatusText.setText(R.string.not_connected);
 
         mGP0seekArc.setOnSeekArcChangeListener(new SeekListener());
@@ -264,14 +271,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onProgressChanged(SeekArc seekArc, int progress, boolean fromUser) {
             int id = seekArc.getId();
-            String strVal = String.valueOf(progress);
+            String strVal = String.valueOf((100 * progress) / 1023);
             //Log.d(TAG, strVal);
             if (id == R.id.gp0seekArc) {
-                mGP0seekText.setText(strVal);
-                mUdpClient.send("d0=" + strVal);
+                mGP0seekText.setText(strVal + "%");
+                mUdpClient.send("d0=" + progress);
             } else if (id == R.id.gp2seekArc) {
-                mGP2seekText.setText(strVal);
-                mUdpClient.send("d2=" + strVal);
+                mGP2seekText.setText(strVal + "%");
+                mUdpClient.send("d2=" + progress);
             }
         }
 
