@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String PWM0_CFG_PREF = APP_PACKAGE + ".pwm0_cfg";
     private static final String PWM2_CFG_PREF = APP_PACKAGE + ".pwm2_cfg";
     private static final String DEFAULT_SERVER_ADDRESS = "192.168.0.136:3456";
-    private static final String DEFAULT_PWM_SETUP = "50, 127";
+    private static final String DEFAULT_PWM_SETUP = "100, 1023";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 mUdpClient.sendconfig(pwm0cfg);
 
                 String pwm2_setup[] = pwm2_cfg_str.split(", ");
-                String pwm2cfg ="f0=" + pwm2_setup[0] + ",r0=" + pwm2_setup[1];
+                String pwm2cfg ="f2=" + pwm2_setup[0] + ",r2=" + pwm2_setup[1];
                 //Log.d(TAG, pwm2cfg);
                 mUdpClient.sendconfig(pwm2cfg);
 
@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
         mGP0seekText.setText("0");
         mGP2seekText.setText("0");
-        mStatusText.setText("not connected");
+        mStatusText.setText(R.string.not_connected);
 
         mGP0seekArc.setOnSeekArcChangeListener(new SeekListener());
         mGP0seekArc.setEnabled(false);
@@ -149,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     mGP0seekArc.setEnabled(false);
                     mGP2seekArc.setEnabled(false);
+                    mStatusText.setText(R.string.not_connected);
                     mUdpClient.disconnect();
                 }
             }
